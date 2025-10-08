@@ -42,6 +42,7 @@ async def set_logint(message: Message, state: FSMContext):
 
 
 async def send_notifications(bot: Bot, preparing_data: dict):
+    print(preparing_data)
     if not preparing_data['notify_users']:
         return
     for user_item in preparing_data['notify_users']:
