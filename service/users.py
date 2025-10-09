@@ -15,7 +15,6 @@ class Users:
 
     async def add_new_user(self, user_login: str, user_tg_id:str):
         user_login = user_login.strip()
-        user_tg_id = user_tg_id.strip()
         await database.add_user(user_login, user_tg_id)
         self.cache_login[user_login] = user_tg_id
         self.cache_tg_id[user_tg_id] = user_login
