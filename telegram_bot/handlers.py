@@ -42,6 +42,8 @@ async def send_notifications(bot: Bot, preparing_data: dict):
         return
     for user_item in preparing_data['notify_users']:
 
-        user_telegram_id = users.cache_login[user_item['name']]
+        user_telegram_id = users.cache_login[user_item.get('name', None)]
+        if not user_telegram_id:
+            continue
         msg_text = generate_msg_with_notif(preparing_data)
         await bot.send_message(chat_id=user_telegram_id, text=msg_text, parse_mode='HTML')
