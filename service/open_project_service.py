@@ -14,10 +14,12 @@ class OpenProjectService:
 
         async with aiohttp.ClientSession() as session:
             url = f"{self.host}{endpoint}"
+
             async with session.get(url, headers=headers) as response:
                 if response.status != 200:
                     return None
-                await response.json()
+                data = await response.json()
+                return data
 
     async def process_webhook_json(self, body_json):
         action = body_json.get('action', None)
@@ -43,7 +45,6 @@ class OpenProjectService:
             task_info = self.get_task_info(work_package)
             activities_url = work_package['_links']['activities']['href']
             activities_json: dict = await self.get_request_to_api(activities_url)
-            print(activities_json)
             last_activity = activities_json['_embedded']['elements'][-1]['details'][-1]['html']
             activity_user_href = activities_json['_embedded']['elements'][-1]['_links']['user']['href']
             task_info['update_type'] = f"Обновление задачи: {last_activity}"
@@ -124,9 +125,6 @@ class OpenProjectService:
         return task_info
 
 
-    def get_last_activities(self):
-        pass
-
-
 open_prj_service = OpenProjectService()
+
 
