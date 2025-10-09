@@ -22,7 +22,7 @@ def generate_msg_with_notif(preparing_data):
     text += f"<b>Описание задачи:</b>\n{preparing_data['description']}"
 
     if preparing_data.get('comment', None):
-        text += f"\n\n<b>Комментарий:</b>\n{preparing_data['comment']}"
+        text += f"\n<b>Комментарий:</b>\n{preparing_data['comment']}"
 
     return text
     
