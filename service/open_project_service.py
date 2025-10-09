@@ -2,130 +2,117 @@ from config import config_
 import aiohttp
 import asyncio
 import base64
+from typing import Optional, Dict, Any, List
 
 
 class OpenProjectService:
-    host = config_.DOMAIN
-    api_key = config_.USER_API_KEY
+    def __init__(self):
+        self.host = config_.DOMAIN
+        self.api_key = config_.USER_API_KEY
 
-    async def get_request_to_api(self, endpoint) -> dict or None:
+    async def get_request_to_api(self, endpoint: str) -> Optional[Dict[str, Any]]:
         auth_string = base64.b64encode(f"apikey:{self.api_key}".encode()).decode()
         headers = {"Authorization": f"Basic {auth_string}"}
-
+        url = f"{self.host}{endpoint}"
         async with aiohttp.ClientSession() as session:
-            url = f"{self.host}{endpoint}"
-
             async with session.get(url, headers=headers) as response:
                 if response.status != 200:
                     return None
-                data = await response.json()
-                return data
+                return await response.json()
 
-    async def process_webhook_json(self, body_json):
-        action = body_json.get('action', None)
+    async def process_webhook_json(self, body_json: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        action = body_json.get('action')
+        work_package = body_json.get('work_package')
+        if not work_package:
+            return None
+
+        task_info = self.get_task_info(work_package)
+
         if action == "work_package:created":
             # Формируем документ если новая таска
-            work_package = body_json['work_package']
-            task_info = self.get_task_info(work_package)
-            task_info['notify_users'] = list(filter(lambda x: x and x != task_info['author'],
-                                                    [
-                                                        task_info['author'],
-                                                        task_info['responsible'],
-                                                        task_info['performer']
-                                                    ]
-                                                    )
-                                             )
-
+            task_info['notify_users'] = [
+                user for user in [task_info['author'], task_info['responsible'], task_info['performer']]
+                if user and user != task_info['author']
+            ]
             task_info['update_type'] = "🆕 <b>Новая задача</b>"
             return task_info
 
         elif action == "work_package:updated":
             # Формируем документ если обновление в существующей таске
-            work_package = body_json['work_package']
-            task_info = self.get_task_info(work_package)
             activities_url = work_package['_links']['activities']['href']
-            activities_json: dict = await self.get_request_to_api(activities_url)
-            last_activity = activities_json['_embedded']['elements'][-1]['details'][-1]['html']
-            activity_user_href = activities_json['_embedded']['elements'][-1]['_links']['user']['href']
+            activities_json = await self.get_request_to_api(activities_url)
+            if not activities_json:
+                return None
+            try:
+                last_element = activities_json['_embedded']['elements'][-1]
+                last_activity = last_element['details'][-1]['html']
+                activity_user_href = last_element['_links']['user']['href']
+            except (KeyError, IndexError):
+                return None
+
             task_info['update_type'] = f"🔁 <b>Обновление задачи:</b> {last_activity}"
-            task_info['notify_users'] = list(filter(lambda x: x and x['href'] != activity_user_href,
-                                                    [
-                                                        task_info['author'],
-                                                        task_info['responsible'],
-                                                        task_info['performer']
-                                                    ]
-                                                    )
-                                             )
+            task_info['notify_users'] = [
+                user for user in [task_info['author'], task_info['responsible'], task_info['performer']]
+                if user and user.get('href') != activity_user_href
+            ]
             return task_info
 
+        return None
 
-    def get_task_info(self, work_package):
-        task_info = {}
-        task_info['update_type'] = None
-        task_info['subject'] = None
-        task_info['type'] = None
-        task_info['priority'] = None
-        task_info['project'] = None
-        task_info['status'] = None
-        task_info['author'] = None
-        task_info['responsible'] = None
-        task_info['performer']: dict or None = None
-        task_info['description'] = None
-        task_info['link'] = None
-        task_info['notify_users'] = []
+    @staticmethod
+    def _get_embedded_value(work_package: Dict[str, Any], keys: List[str], default=None):
+        """Safely get deeply embedded value from a dict."""
+        current = work_package
+        try:
+            for key in keys:
+                current = current[key]
+            return current
+        except (KeyError, TypeError):
+            return default
 
-        try:
-            task_info['subject'] = work_package['subject']
-        except KeyError:
-            pass
+    def get_task_info(self, work_package: Dict[str, Any]) -> Dict[str, Any]:
+        host = self.host
+        return {
+            'update_type': None,
+            'subject': work_package.get('subject'),
+            'type': work_package.get('_type'),
+            'priority': self._get_embedded_value(work_package, ['_embedded', 'priority', 'name']),
+            'project': self._get_embedded_value(work_package, ['_embedded', 'project', 'name']),
+            'status': self._get_embedded_value(work_package, ['_embedded', 'status', 'name']),
+            'author': self._get_author_info(work_package),
+            'performer': self._get_field_info(work_package, 'customField12'),
+            'responsible': self._get_field_info(work_package, 'responsible'),
+            'description': self._get_embedded_value(work_package, ['description', 'raw']),
+            'link': self._get_link(work_package, host),
+            'notify_users': []
+        }
 
-        try:
-            task_info['priority'] = work_package['_embedded']['priority']['name']
-        except KeyError:
-            pass
+    @staticmethod
+    def _get_author_info(work_package: Dict[str, Any]) -> Optional[Dict[str, str]]:
+        author = OpenProjectService._get_embedded_value(work_package, ['_embedded', 'author'])
+        if author:
+            return {
+                'name': author.get('name'),
+                'href': OpenProjectService._get_embedded_value(author, ['_links', 'self', 'href'])
+            }
+        return None
 
-        try:
-            task_info['project'] = work_package['_embedded']['project']['name']
-        except KeyError:
-            pass
-        try:
-            task_info['status'] = work_package['_embedded']['status']['name']
-        except KeyError:
-            pass
-        try:
-            task_info['author'] = {'name': work_package['_embedded']['author']['name'],
-                                   'href': work_package['_embedded']['author']['_links']['self']['href']
-                                   }
-        except KeyError:
-            pass
+    @staticmethod
+    def _get_field_info(work_package: Dict[str, Any], field: str) -> Optional[Dict[str, str]]:
+        field_data = OpenProjectService._get_embedded_value(work_package, ['_embedded', field])
+        if field_data:
+            return {
+                'name': field_data.get('name'),
+                'href': OpenProjectService._get_embedded_value(field_data, ['_links', 'self', 'href'])
+            }
+        return None
 
-        try:
-            task_info['performer'] = {'name': work_package['_embedded']['customField12']['name'],
-                                      'href': work_package['_embedded']['customField12']['_links']['self']['href']
-                                      }
-        except KeyError:
-            pass
-
-        try:
-            task_info['responsible'] = {'name': work_package['_embedded']['responsible']['name'],
-                                        'href': work_package['_embedded']['responsible']['_links']['self']['href']
-                                       }
-        except KeyError:
-            pass
-
-        try:
-            task_info['description'] = work_package['description']['raw']
-        except KeyError:
-            pass
-
-        try:
-            url = work_package['_embedded']['attachments']['_links']['self']['href']
-            task_info['link'] = url.replace('/api/v3/', f'{self.host}/')
-        except KeyError:
-            pass
-        return task_info
+    @staticmethod
+    def _get_link(work_package: Dict[str, Any], host: str) -> Optional[str]:
+        url = OpenProjectService._get_embedded_value(work_package, ['_embedded', 'attachments', '_links', 'self', 'href'])
+        if url:
+            return url.replace('/api/v3/', f'{host}/')
+        return None
 
 
 open_prj_service = OpenProjectService()
-
-

@@ -37,12 +37,7 @@ async def set_logint(message: Message, state: FSMContext):
     await message.answer(set_login_done_msg, parse_mode='HTML')
 
 
-# async def send_notification(bot: Bot, user_id: int, msg_text: str):
-#     await bot.send_message(chat_id=user_id, text=msg_text, parse_mode='HTML')
-
-
 async def send_notifications(bot: Bot, preparing_data: dict):
-    print(preparing_data)
     if not preparing_data['notify_users']:
         return
     for user_item in preparing_data['notify_users']:
@@ -50,7 +45,3 @@ async def send_notifications(bot: Bot, preparing_data: dict):
         user_telegram_id = users.cache_login[user_item['name']]
         msg_text = generate_msg_with_notif(preparing_data)
         await bot.send_message(chat_id=user_telegram_id, text=msg_text, parse_mode='HTML')
-
-
-
-

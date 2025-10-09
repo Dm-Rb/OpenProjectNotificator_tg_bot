@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 
+
 # загружаем переменные окружения из .env
 load_dotenv()
 
