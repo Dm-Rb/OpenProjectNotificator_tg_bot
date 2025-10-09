@@ -14,7 +14,7 @@ async def openproject_webhook(request: Request):
     body_json = await request.json()
     if body_json:
         preparing_data = await open_prj_service.process_webhook_json(body_json)
-        if preparing_data:
+        if isinstance(preparing_data, dict):
             await send_notifications(bot_obj, preparing_data)
 
     return {"status": "ok"}

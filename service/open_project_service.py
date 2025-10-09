@@ -58,6 +58,7 @@ class OpenProjectService:
                                              )
             return task_info
 
+
     def get_task_info(self, work_package):
         task_info = {}
         task_info['update_type'] = None
