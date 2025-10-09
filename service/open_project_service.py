@@ -43,6 +43,7 @@ class OpenProjectService:
             task_info = self.get_task_info(work_package)
             activities_url = work_package['_links']['activities']['href']
             activities_json: dict = await self.get_request_to_api(activities_url)
+            print(activities_json)
             last_activity = activities_json['_embedded']['elements'][-1]['details'][-1]['html']
             activity_user_href = activities_json['_embedded']['elements'][-1]['_links']['user']['href']
             task_info['update_type'] = f"Обновление задачи: {last_activity}"
@@ -128,3 +129,4 @@ class OpenProjectService:
 
 
 open_prj_service = OpenProjectService()
+
