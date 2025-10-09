@@ -19,7 +19,7 @@ class OpenProjectService:
                     return None
                 await response.json()
 
-    def process_webhook_json(self, body_json):
+    async def process_webhook_json(self, body_json):
         action = body_json.get('action', None)
         if action == "work_package:created":
             # Формируем документ если новая таска
