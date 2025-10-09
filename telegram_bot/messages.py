@@ -19,7 +19,7 @@ def generate_msg_with_notif(preparing_data):
     if preparing_data['responsible']:
         text += f"<b>Ответственный:</b> {preparing_data['responsible']['name']}\n"
 
-    text += f"\n{preparing_data['description']}"
+    text += f"<b>Описание задачи:</b>\n{preparing_data['description']}"
 
     return text
     
