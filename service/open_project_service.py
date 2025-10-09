@@ -8,8 +8,8 @@ class OpenProjectService:
     host = config_.DOMAIN
     api_key = config_.USER_API_KEY
 
-    async def get_request_to_api(self, endpoint, api_key):
-        auth_string = base64.b64encode(f"apikey:{api_key}".encode()).decode()
+    async def get_request_to_api(self, endpoint) -> dict or None:
+        auth_string = base64.b64encode(f"apikey:{self.api_key}".encode()).decode()
         headers = {"Authorization": f"Basic {auth_string}"}
 
         async with aiohttp.ClientSession() as session:
@@ -22,6 +22,7 @@ class OpenProjectService:
     def process_webhook_json(self, body_json):
         action = body_json.get('action', None)
         if action == "work_package:created":
+            # Формируем документ если новая таска
             work_package = body_json['work_package']
             task_info = self.get_task_info(work_package)
             task_info['notify_users'] = list(filter(lambda x: x and x != task_info['author'],
@@ -33,14 +34,27 @@ class OpenProjectService:
                                                     )
                                              )
 
-            task_info['update_type'] = "Новая задача"
+            task_info['update_type'] = "🆕 Новая задача"
             return task_info
 
         elif action == "work_package:updated":
+            # Формируем документ если обновление в существующей таске
             work_package = body_json['work_package']
             task_info = self.get_task_info(work_package)
-            if task_info['performer']:
-                task_info['notify_users'].append(task_info['performer'])
+            activities_url = work_package['_links']['activities']['href']
+            activities_json: dict = await self.get_request_to_api(activities_url)
+            last_activity = activities_json['_embedded']['elements'][-1]['details'][-1]['html']
+            activity_user_href = activities_json['_embedded']['elements'][-1]['_links']['user']['href']
+            task_info['update_type'] = f"Обновление задачи: {last_activity}"
+            task_info['notify_users'] = list(filter(lambda x: x and x['href'] != activity_user_href,
+                                                    [
+                                                        task_info['author'],
+                                                        task_info['responsible'],
+                                                        task_info['performer']
+                                                    ]
+                                                    )
+                                             )
+            return task_info
 
     def get_task_info(self, work_package):
         task_info = {}

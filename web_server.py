@@ -4,6 +4,8 @@ from config import config_
 from service.open_project_service import open_prj_service
 from telegram_bot.handlers import send_notifications
 from telegram_bot.bot import bot as bot_obj
+
+
 app = FastAPI()
 
 
