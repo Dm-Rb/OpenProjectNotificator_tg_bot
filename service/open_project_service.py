@@ -36,7 +36,7 @@ class OpenProjectService:
                                                     )
                                              )
 
-            task_info['update_type'] = "🆕 Новая задача"
+            task_info['update_type'] = "🆕 <b>Новая задача</b>"
             return task_info
 
         elif action == "work_package:updated":
@@ -47,7 +47,7 @@ class OpenProjectService:
             activities_json: dict = await self.get_request_to_api(activities_url)
             last_activity = activities_json['_embedded']['elements'][-1]['details'][-1]['html']
             activity_user_href = activities_json['_embedded']['elements'][-1]['_links']['user']['href']
-            task_info['update_type'] = f"Обновление задачи: {last_activity}"
+            task_info['update_type'] = f"🔁 <b>Обновление задачи:</b> {last_activity}"
             task_info['notify_users'] = list(filter(lambda x: x and x['href'] != activity_user_href,
                                                     [
                                                         task_info['author'],
