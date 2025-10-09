@@ -68,16 +68,21 @@ class OpenProjectService:
             work_package = await self.get_request_to_api(work_package_url)
             task_info = self.get_task_info(work_package)
             task_info['update_type'] = f"💬 <b>Добавлен новый комментарий к задаче</b> пользователем"
-            activity_user_name = [i['name'] for i in
-                                  [task_info['author'], task_info['responsible'], task_info['performer']] if i['href'] == activity_user_href
-                                  ]
-            if activity_user_name:
-                activity_user_name = activity_user_name[0]
-            else:
-                r = self.get_task_info(activity_user_href)
-                activity_user_name = r.get('name', '<Нет данных>')
+
+            # activity_user_name = [i['name'] for i in
+            #                       [task_info['author'], task_info['responsible'], task_info['performer']] if i['href'] == activity_user_href
+            #                       ]
+            # if activity_user_name:
+            #     activity_user_name = activity_user_name[0]
+            # else:
+            r = self.get_task_info(activity_user_href)
+            activity_user_name = r.get('name', '<Нет данных>')
             task_info['update_type'] += f" <i>{activity_user_name}</i>"
             task_info['comment'] = new_comment
+            task_info['notify_users'] = [
+                user for user in [task_info['author'], task_info['responsible'], task_info['performer']]
+                if user and user.get('href') != activity_user_href
+            ]
             return task_info
 
         return None
