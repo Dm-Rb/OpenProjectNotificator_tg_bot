@@ -12,5 +12,6 @@ class Config:
     PORT = os.getenv("SERVER_PORT")
     DOMAIN = os.getenv("OPENPROJECT_DOMAIN")
     USER_API_KEY = os.getenv("OPENPROJECT_USER_API_KEY")
+    DIR_PATH = os.getenv("DIR_PATH")
 
 config_ = Config()

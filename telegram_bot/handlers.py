@@ -31,15 +31,6 @@ async def cmd_set_logint(message: Message, state: FSMContext):
     await state.set_state(LoginState.waiting_login)
 
 
-@router.message(Command("wipe_me"))
-async def cmd_set_logint(message: Message):
-    tg_user_id = message.chat.id
-    r = await users.delete_user(tg_user_id)
-    if r:
-        await message.answer(wipe_me_cmd_done)
-    else:
-        await message.answer(wipe_me_cmd_empty)
-
 
 @router.message(LoginState.waiting_login)
 async def set_logint(message: Message, state: FSMContext):
@@ -57,6 +48,16 @@ async def set_logint(message: Message, state: FSMContext):
     await state.clear()
     await users.add_new_user(user_login, tg_user_id)
     await message.answer(set_login_done_msg, parse_mode='HTML')
+
+
+@router.message(Command("wipe_me"))
+async def cmd_wipe_me(message: Message):
+    tg_user_id = message.chat.id
+    r = await users.delete_user(tg_user_id)
+    if r:
+        await message.answer(wipe_me_cmd_done)
+    else:
+        await message.answer(wipe_me_cmd_empty)
 
 
 async def send_notifications(bot: Bot, preparing_data: dict):

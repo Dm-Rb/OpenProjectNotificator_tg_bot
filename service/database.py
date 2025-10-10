@@ -1,10 +1,13 @@
 import aiosqlite
 import sqlite3
+from config import config_
+import os
 
 
 class Database:
     def __init__(self, db_path: str = "data.db"):
-        self.db_path = db_path
+
+        self.db_path = os.path.join(config_.DIR_PATH, "data.db")
         self._ensure_db()
 
     def _ensure_db(self):

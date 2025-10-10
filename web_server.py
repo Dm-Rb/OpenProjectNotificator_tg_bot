@@ -5,15 +5,20 @@ from service.open_project_service import open_prj_service
 from telegram_bot.handlers import send_notifications
 from telegram_bot.bot import bot as bot_obj
 import logging
+import os
 
 
-# Настройка логгирования в файл
+
+log_file_path = os.path.join(config_.DIR_PATH, "app.log")
+
+# Создание директории, если она не существует
+os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s %(name)s %(message)s',
     handlers=[
-        logging.FileHandler("app.log", encoding="utf-8"),
-        logging.StreamHandler()
+        logging.FileHandler(log_file_path, encoding="utf-8")
     ]
 )
 logger = logging.getLogger("openproject_notificator")
