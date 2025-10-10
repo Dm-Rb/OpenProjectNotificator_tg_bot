@@ -5,8 +5,8 @@ class Users:
 
     def __init__(self):
 
-        self.cache_login = {}
-        self.cache_tg_id = {}
+        self.cache_login = {}  # {login: tg_id}
+        self.cache_tg_id = {}  # {tg_id: login}
 
         db_answer = database.get_all_users()
         if db_answer:
@@ -18,6 +18,15 @@ class Users:
         await database.add_user(user_login, user_tg_id)
         self.cache_login[user_login] = user_tg_id
         self.cache_tg_id[user_tg_id] = user_login
+
+    async def delete_user(self, user_tg_id: int):
+        user_login = self.cache_tg_id.pop(user_tg_id, None)
+        if user_login:
+            self.cache_login.pop(user_login, None)
+        count_rows = await database.delete_user(user_tg_id)
+        if count_rows:
+            return True
+
 
 
 users = Users()

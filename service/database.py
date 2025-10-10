@@ -38,6 +38,13 @@ class Database:
                     )
                 await db.commit()
 
+    async def delete_user(self, user_tg_id: int):
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute("DELETE FROM users WHERE user_tg_id = ?", (user_tg_id,)) as cursor:
+                await db.commit()
+                # количество удаленных строк для проверки
+                return cursor.rowcount
+
     def get_all_users(self):
         with sqlite3.connect(self.db_path) as conn:
             r = conn.execute("SELECT login, user_tg_id FROM users").fetchall()
