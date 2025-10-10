@@ -4,6 +4,19 @@ from config import config_
 from service.open_project_service import open_prj_service
 from telegram_bot.handlers import send_notifications
 from telegram_bot.bot import bot as bot_obj
+import logging
+
+
+# Настройка логгирования в файл
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(name)s %(message)s',
+    handlers=[
+        logging.FileHandler("app.log", encoding="utf-8"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger("openproject_notificator")
 
 
 app = FastAPI()
@@ -13,10 +26,14 @@ app = FastAPI()
 async def openproject_webhook(request: Request):
     body_json = await request.json()
     if body_json:
-        preparing_data = await open_prj_service.process_webhook_json(body_json)
-        if isinstance(preparing_data, dict):
-            await send_notifications(bot_obj, preparing_data)
-
+        try:
+            preparing_data = await open_prj_service.process_webhook_json(body_json)
+            if isinstance(preparing_data, dict):
+                await send_notifications(bot_obj, preparing_data)
+        except Exception as e:
+            logger.error("Ошибка при обработке webhook_json: %s; body_json: %s", str(e), body_json)
+            # Можно также пробросить ошибку или вернуть корректный ответ FastAPI
+            raise
     return {"status": "ok"}
 
 
