@@ -37,7 +37,6 @@ async def openproject_webhook(request: Request):
                 await send_notifications(bot_obj, preparing_data)
         except Exception as e:
             logger.error("Ошибка при обработке webhook_json: %s; body_json: %s", str(e), body_json)
-            # Можно также пробросить ошибку или вернуть корректный ответ FastAPI
             raise
     return {"status": "ok"}
 

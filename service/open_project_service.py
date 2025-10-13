@@ -4,6 +4,7 @@ import base64
 from typing import Optional, Dict, Any, List
 import re
 
+
 class OpenProjectService:
     def __init__(self):
         self.host = config_.DOMAIN
