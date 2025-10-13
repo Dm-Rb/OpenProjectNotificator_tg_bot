@@ -73,7 +73,6 @@ class OpenProjectService:
             return task_info
 
         elif action == "work_package_comment:comment":
-            print("11")
             # Формируем документ если новый комментарий к таске
             new_comment = body_json["activity"]["comment"]["raw"]
             activity_user_href = body_json["activity"]["_links"]["user"]['href']
