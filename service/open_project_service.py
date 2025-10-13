@@ -25,7 +25,7 @@ class OpenProjectService:
 
         res = await self.get_request_to_api(f'/api/v3/users?offset={str(offset)}')
         if not res:
-            ValueError('Пустой ответ при запросе на получение списка всех пользователей к /api/v3/users')
+            raise ValueError('‼️ Пустой ответ при запросе на получение списка всех пользователей к /api/v3/users. Возможно сервисный аккаунт заблокирован, обратитесь к администратору')
         if not res['_embedded']['elements']:  # выход из рекурсии
             return data
 

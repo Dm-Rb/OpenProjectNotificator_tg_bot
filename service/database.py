@@ -22,24 +22,24 @@ class Database:
             conn.commit()
 
     async def add_user(self, login: str, user_tg_id: int):
+
         async with aiosqlite.connect(self.db_path) as db:
-            async with aiosqlite.connect(self.db_path) as db:
-                # user_tg_id exist in table
-                async with db.execute("SELECT 1 FROM users WHERE user_tg_id = ?", (user_tg_id,)) as cursor:
-                    exists = await cursor.fetchone()
-                if exists:
-                    # update if exists
-                    await db.execute(
-                        "UPDATE users SET login = ? WHERE user_tg_id = ?",
-                        (login, user_tg_id)
-                    )
-                else:
-                    # insert new row if not exists
-                    await db.execute(
-                        "INSERT INTO users (login, user_tg_id) VALUES (?, ?)",
-                        (login, user_tg_id)
-                    )
-                await db.commit()
+            # user_tg_id exist in table
+            async with db.execute("SELECT 1 FROM users WHERE user_tg_id = ?", (user_tg_id,)) as cursor:
+                exists = await cursor.fetchone()
+            if exists:
+                # update if exists
+                await db.execute(
+                    "UPDATE users SET login = ? WHERE user_tg_id = ?",
+                    (login, user_tg_id)
+                )
+            else:
+                # insert new row if not exists
+                await db.execute(
+                    "INSERT INTO users (login, user_tg_id) VALUES (?, ?)",
+                    (login, user_tg_id)
+                )
+            await db.commit()
 
     async def delete_user(self, user_tg_id: int):
         async with aiosqlite.connect(self.db_path) as db:
