@@ -121,7 +121,7 @@ class OpenProjectService:
             'priority': self._get_embedded_value(work_package, ['_embedded', 'priority', 'name']),
             'project': self._get_embedded_value(work_package, ['_embedded', 'project', 'name']),
             'status': self._get_embedded_value(work_package, ['_embedded', 'status', 'name']),
-            'author': self._get_author_info(work_package),
+            'author': self._get_field_info(work_package, 'author'),
             'performer': self._get_field_info(work_package, 'customField12'),
             'responsible': self._get_field_info(work_package, 'responsible'),
             'description': self._get_embedded_value(work_package, ['description', 'raw']),
@@ -130,24 +130,13 @@ class OpenProjectService:
         }
         return info
 
-
-    @staticmethod
-    def _get_author_info(work_package: Dict[str, Any]) -> Optional[Dict[str, str]]:
-        author = OpenProjectService._get_embedded_value(work_package, ['_embedded', 'author'])
-        if author:
+    def _get_field_info(self, work_package: Dict[str, Any], field: str) -> Optional[Dict[str, str]]:
+        name = self._get_embedded_value(work_package, ['_embedded', field, '_links', 'self', 'title'])
+        href = self._get_embedded_value(work_package, ['_embedded', field, '_links', 'self', 'href'])
+        if name and href:
             return {
-                'name': author.get('name'),
-                'href': OpenProjectService._get_embedded_value(author, ['_links', 'self', 'href'])
-            }
-        return None
-
-    @staticmethod
-    def _get_field_info(work_package: Dict[str, Any], field: str) -> Optional[Dict[str, str]]:
-        field_data = OpenProjectService._get_embedded_value(work_package, ['_embedded', field])
-        if field_data:
-            return {
-                'name': field_data.get('name'),
-                'href': OpenProjectService._get_embedded_value(field_data, ['_links', 'self', 'href'])
+                'name': name,
+                'href': href
             }
         return None
 
