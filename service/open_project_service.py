@@ -106,7 +106,7 @@ class OpenProjectService:
         try:
             for key in keys:
                 current = current[key]
-            pattern = r'<img\b[^>]*>'
+            pattern = r'<img\b[^>]*>|<figure\b[^>]*>[\s\S]*?</figure>'
             current = re.sub(pattern, '* Изображение 🏞', current)
             return current
         except (KeyError, TypeError):
