@@ -8,6 +8,7 @@ from telegram_bot.messages import start_cmd_msg, set_login_cmd_msg, set_login_do
     set_login_error_msg, set_login_empty_msg, wipe_me_cmd_done, wipe_me_cmd_empty
 from service.users import users
 from service.open_project_service import open_prj_service
+import re
 
 
 router = Router()
@@ -75,8 +76,11 @@ async def send_notifications(bot: Bot, preparing_data: dict):
             await bot.send_message(chat_id=user_telegram_id, text=msg_text, parse_mode='HTML')
         except TelegramBadRequest as e:
             if "can't parse entities" in str(e):
-                # если не удалось распарсить HTML, отправляем как обычный текст
-                await bot.send_message(chat_id=user_telegram_id, text=msg_text, parse_mode=None)
+                # если не удалось распарсить HTML, применяем регулярку, которая вытирает все теги кроме b,i,a
+                pattern = r'<(?!\/?(b|i|a)\b)[^>]+>'
+                msg_text = re.sub(pattern, '', msg_text)
+                msg_text = msg_text.replace('\n\n', '\n')
+                await bot.send_message(chat_id=user_telegram_id, text=msg_text, parse_mode='HTML')
             else:
                 raise e
         except Exception as _ex:
