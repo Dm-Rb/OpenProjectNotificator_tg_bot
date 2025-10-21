@@ -11,6 +11,9 @@ from service.open_project_service import open_prj_service
 import re
 
 
+"""Модуль с хендлерами бота"""
+
+
 router = Router()
 
 

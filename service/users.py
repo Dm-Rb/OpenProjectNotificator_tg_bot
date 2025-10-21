@@ -2,12 +2,16 @@ from service.database import database
 
 
 class Users:
+    """
+    Сервисный класс-прослойка для работы с базой данных. Обёртка для экземпляра класса <Database>
+    """
 
     def __init__(self):
+        # типа кеш что бы не насиловать запросами каждый раз файл БД
+        self.cache_login = {}  # {login: tg_id} - словарь, где ключ - login, значение - tg_id
+        self.cache_tg_id = {}  # {tg_id: login} - аналогично, но наоборот
 
-        self.cache_login = {}  # {login: tg_id}
-        self.cache_tg_id = {}  # {tg_id: login}
-
+        # заполняем значениями из базы данных
         db_answer = database.get_all_users()
         if db_answer:
             self.cache_login = {i[0]: i[1] for i in db_answer}

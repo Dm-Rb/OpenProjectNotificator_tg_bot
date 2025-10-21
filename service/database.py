@@ -5,6 +5,12 @@ import os
 
 
 class Database:
+    """
+    Класс для работы с файловой базой данныъ sqlite. Файл базы данных содержит пару:
+    login - логин пользователя на таскборде Open Project
+    user_tg_id - идентификатор пользователя телеграм
+    """
+
     def __init__(self, db_path: str = "data.db"):
 
         self.db_path = os.path.join(config_.DIR_PATH, "data.db")
@@ -22,6 +28,7 @@ class Database:
             conn.commit()
 
     async def add_user(self, login: str, user_tg_id: int):
+        """Добавить пару"""
 
         async with aiosqlite.connect(self.db_path) as db:
             # user_tg_id exist in table
@@ -42,6 +49,7 @@ class Database:
             await db.commit()
 
     async def delete_user(self, user_tg_id: int):
+        """Удалить пару"""
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute("DELETE FROM users WHERE user_tg_id = ?", (user_tg_id,)) as cursor:
                 await db.commit()
@@ -49,11 +57,13 @@ class Database:
                 return cursor.rowcount
 
     def get_all_users(self):
+        """Выбрать всё"""
         with sqlite3.connect(self.db_path) as conn:
             r = conn.execute("SELECT login, user_tg_id FROM users").fetchall()
             return r
 
     async def get_user_by_tg_id(self, user_tg_id: int):
+        """Получить login по его user_tg_id"""
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(
                 "SELECT user_tg_id FROM users WHERE user_tg_id = ?",
