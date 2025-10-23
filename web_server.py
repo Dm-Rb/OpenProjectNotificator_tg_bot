@@ -11,24 +11,23 @@ app = FastAPI()
 
 
 @app.post("/webhook")
-# слушаем host:port/webhook на входящие вебхуки
+# Listening to https://yout_host:port/webhook and receiving webhooks from your "Open Project"
 async def openproject_webhook(request: Request):
     body_json: dict = await request.json()
     if body_json:
         try:
-            # передаём сырое содержание вебхука в обработчик
-            preparing_data = await open_prj_service.process_webhook_json(body_json)
-            if isinstance(preparing_data, dict):
-                await send_notifications(bot_obj, preparing_data)
+            # Passing the raw webhook content to the handler
+            prepared_data = await open_prj_service.processing_webhook_json(body_json)
+            if isinstance(prepared_data, dict):
+                # Sending the prepared data to the Telegram bot for distribution to users
+                await send_notifications(bot_obj, prepared_data)
         except Exception as e:
-            # Записываем в лог сырой вебхук и имя исключения
-            logger.error("Ошибка при обработке webhook_json: %s; body_json: %s", str(e), body_json)
-            raise
+            logger.error("Error processing 'webhook_json': %s; body_json: %s", str(e), body_json)
     return {"status": "ok"}
 
 
 async def start_fastapi():
-    # main функция вебсервера которая импортируется из точки входа (run.py) с запуском программы
+    # Main function to start the web server that is imported from the entry point (run.py)
     config = uvicorn.Config(app, host=config_.HOST, port=int(config_.PORT), log_level="info")
     server = uvicorn.Server(config)
     await server.serve()

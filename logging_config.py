@@ -3,11 +3,11 @@ import os
 from config import config_
 
 
-"""Настройка логирования"""
+"""Logging configuration"""
 
 
-# Предполагается, что бот упаковывается в docker. log_file_path - это внешний путь (не в контейнере) по которому
-# будет храниться файл с логами app.log. Путь задаётся в файле конфигурации .env в константе DIR_PATH
+# It is assumed that the bot is packaged in Docker. log_file_path is the external path (not in the container)
+# where the app.log file will be stored. The path is specified in the .env configuration file in the DIR_PATH constant
 log_file_path = os.path.join(config_.DIR_PATH, "app.log")
 os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
 

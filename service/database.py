@@ -6,12 +6,13 @@ import os
 
 class Database:
     """
-    Класс для работы с файловой базой данныъ sqlite. Файл базы данных содержит пару:
-    login - логин пользователя на таскборде Open Project
-    user_tg_id - идентификатор пользователя телеграм
+    Class for working with the SQLite file database. The database file contains pairs:
+        - login is user's login on the Open Project task board
+        - user_tg_id is user's Telegram identifier
+    The data.db file will be located at config_.DIR_PATH
     """
 
-    def __init__(self, db_path: str = "data.db"):
+    def __init__(self):
 
         self.db_path = os.path.join(config_.DIR_PATH, "data.db")
         self._ensure_db()
@@ -28,8 +29,7 @@ class Database:
             conn.commit()
 
     async def add_user(self, login: str, user_tg_id: int):
-        """Добавить пару"""
-
+        """Add new row or update exist row"""
         async with aiosqlite.connect(self.db_path) as db:
             # user_tg_id exist in table
             async with db.execute("SELECT 1 FROM users WHERE user_tg_id = ?", (user_tg_id,)) as cursor:
@@ -49,28 +49,18 @@ class Database:
             await db.commit()
 
     async def delete_user(self, user_tg_id: int):
-        """Удалить пару"""
+        """Delete row """
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute("DELETE FROM users WHERE user_tg_id = ?", (user_tg_id,)) as cursor:
                 await db.commit()
-                # количество удаленных строк для проверки
+                # number of deleted rows for verification
                 return cursor.rowcount
 
     def get_all_users(self):
-        """Выбрать всё"""
+        """Get all rows"""
         with sqlite3.connect(self.db_path) as conn:
             r = conn.execute("SELECT login, user_tg_id FROM users").fetchall()
             return r
-
-    async def get_user_by_tg_id(self, user_tg_id: int):
-        """Получить login по его user_tg_id"""
-        async with aiosqlite.connect(self.db_path) as db:
-            async with db.execute(
-                "SELECT user_tg_id FROM users WHERE user_tg_id = ?",
-                (user_tg_id,)
-            ) as cursor:
-                row = await cursor.fetchone()
-                return row[0] if row else None
 
 
 database = Database()
