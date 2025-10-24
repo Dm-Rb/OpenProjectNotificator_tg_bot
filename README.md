@@ -90,5 +90,7 @@ Notifications: When updates occur in OpenProject, the bot automatically sends no
 
 - Link to the task/project
 
-If you have changed your OpenProject account, reassign it in the bot by sending the command /set_login
-
+If you have changed your OpenProject account, reassign it in the bot by sending the command 
+```
+/set_login
+```
