@@ -88,8 +88,8 @@ Registration: Bot requests OpenProject login and saves the OpenProject login →
 
 Notifications: When updates occur in OpenProject, the bot automatically sends notifications:
 
-Brief description of the change
+- Brief description of the change
 
-Link to the task/project
+- Link to the task/project
 
-Information about the author of the change
+
