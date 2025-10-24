@@ -41,7 +41,7 @@ TELEGRAM_BOT_TOKEN=your_telegram_bot_token
 SERVER_HOST=localhost
 SERVER_PORT=8484
 OPENPROJECT_DOMAIN=https://your-openproject-instance.com
-OPENPROJECT_USER_API_KEY=your_openproject_api_key
+OPENPROJECT_USER_API_KEY=user-token
 DIR_PATH=./data
 ```
 Note: DIR_PATH - file system path for storing log files and SQLite database with users
@@ -58,7 +58,7 @@ Note: DIR_PATH - file system path for storing log files and SQLite database with
 
 Run the get_webhook_test.py module in the project root. With successful configuration, you'll see webhook content in JSON format in the terminal when a task is updated.
 
-API Token Creation
+## User API Token Creation
 
 1. Register an account in OpenProject with administrator rights
 Note: This account will serve as a service account. The access token will be used for making requests to the OpenProject API to obtain more detailed information not contained in the webhook body.
@@ -78,14 +78,14 @@ python3 run.py
 
 🔧 Usage
 
-    Getting Started: User starts the bot with the /start command
+Getting Started: User starts the bot with the /start command
 
-    Registration: Bot requests OpenProject login and saves the OpenProject login → Telegram ID mapping
+Registration: Bot requests OpenProject login and saves the OpenProject login → Telegram ID mapping
 
-    Notifications: When updates occur in OpenProject, the bot automatically sends notifications:
+Notifications: When updates occur in OpenProject, the bot automatically sends notifications:
 
-        Brief description of the change
+Brief description of the change
 
-        Link to the task/project
+Link to the task/project
 
-        Information about the author of the change
+Information about the author of the change
