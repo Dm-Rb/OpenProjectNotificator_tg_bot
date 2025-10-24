@@ -1,6 +1,6 @@
 OpenProject Telegram Notifications Bot
 
-https://img.shields.io/badge/Python-3.8+-blue.svg
+https://img.shields.io/badge/Python-3.10+-blue.svg
 https://img.shields.io/badge/FastAPI-0.68+-green.svg
 https://img.shields.io/badge/aiogram-3.0+-blue.svg
 
@@ -33,18 +33,22 @@ The project consists of three main components:
 
 ⚙️ Installation and Configuration
 Installing Dependencies
-``pip install -r requirements.txt``
+bash
+
+pip install -r requirements.txt
 
 Configuration Setup
 
 Create a .env file in the project root:
-    ``` TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-    SERVER_HOST=localhost
-    SERVER_PORT=8484
-    OPENPROJECT_DOMAIN=https://your-openproject-instance.com
-    OPENPROJECT_USER_API_KEY=your_openproject_api_key
-    DIR_PATH=./data
-    ```
+env
+
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+SERVER_HOST=localhost
+SERVER_PORT=8484
+OPENPROJECT_DOMAIN=https://your-openproject-instance.com
+OPENPROJECT_USER_API_KEY=your_openproject_api_key
+DIR_PATH=./data
+
     Note: DIR_PATH - file system path for storing log files and SQLite database with users
 
 Webhook Configuration in OpenProject
@@ -71,3 +75,22 @@ API Token Creation
     Specify the token in the .env file in the OPENPROJECT_USER_API_KEY variable
 
     Note: This account will serve as a service account. The access token will be used for making requests to the OpenProject API to obtain more detailed information not contained in the webhook body.
+
+Bot Launch
+bash
+
+python run.py
+
+🔧 Usage
+
+    Getting Started: User starts the bot with the /start command
+
+    Registration: Bot requests OpenProject login and saves the OpenProject login → Telegram ID mapping
+
+    Notifications: When updates occur in OpenProject, the bot automatically sends notifications:
+
+        Brief description of the change
+
+        Link to the task/project
+
+        Information about the author of the change
