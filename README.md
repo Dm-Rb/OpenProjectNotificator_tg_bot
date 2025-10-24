@@ -80,7 +80,10 @@ python3 run.py
 ```
 **Usage
 
-Getting Started: User starts the bot with the /start command
+Getting Started: User starts the bot with the command
+```
+/start
+```
 
 Registration: Bot requests OpenProject login and saves the OpenProject login → Telegram ID mapping
 
