@@ -47,9 +47,9 @@ OPENPROJECT_USER_API_KEY=user-token
 DIR_PATH=./data
 ```
 Note:
-DIR_PATH - file system path for storing log files and SQLite database with users
+DIR_PATH -> file system path for storing log files and SQLite database with users
 
-OPENPROJECT_USER_API_KEY - more details in the [User API Token Creation](#user_token) paragraph.
+OPENPROJECT_USER_API_KEY -> more details in the [User API Token Creation](#user_token) paragraph.
 
 ## Webhook Configuration in OpenProject
 
