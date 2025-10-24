@@ -78,8 +78,7 @@ Run the get_webhook_test.py module in the project root. With successful configur
 ```
 python3 run.py
 ```
-
-🔧 Usage
+Usage
 
 Getting Started: User starts the bot with the /start command
 
