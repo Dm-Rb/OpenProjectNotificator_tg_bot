@@ -23,7 +23,10 @@ def generate_notif_msg(preparing_data):
     text += f"<b>Статус:</b> {status_colors.get(preparing_data.get('status', None), '')} {preparing_data['status'] if preparing_data['status'] else '-'}\n"
     text += f"<b>Приоритет:</b> {priority_colors.get(preparing_data.get('priority', None), '')} {preparing_data['priority'] if preparing_data['priority'] else '-'}\n"
     text += f"<b>Автор:</b> {preparing_data['author']['name']}\n"
-    text += f"<b>Исполнитель:</b> {preparing_data['performer']['name'] if preparing_data['performer']['name'] else ''}\n"
+    try:
+        text += f"<b>Исполнитель:</b> {preparing_data['performer']['name']}\n" # custom field
+    except KeyError:
+        pass
     if preparing_data['responsible']:
         text += f"<b>Ответственный:</b> {preparing_data['responsible']['name']}\n"
 
