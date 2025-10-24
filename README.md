@@ -47,8 +47,9 @@ OPENPROJECT_USER_API_KEY=user-token
 DIR_PATH=./data
 ```
 Note:
- DIR_PATH - file system path for storing log files and SQLite database with users
- OPENPROJECT_USER_API_KEY - more details in the [User API Token Creation](#user_token) paragraph.
+DIR_PATH - file system path for storing log files and SQLite database with users
+
+OPENPROJECT_USER_API_KEY - more details in the [User API Token Creation](#user_token) paragraph.
 
 ## Webhook Configuration in OpenProject
 
@@ -62,7 +63,7 @@ Note:
 
 Run the get_webhook_test.py module in the project root. With successful configuration, you'll see webhook content in JSON format in the terminal when a task is updated.
 
-## User API Token Creation <span id="#user_token"></span>
+## User API Token Creation <span id="user_token"></span>
 
 1. Register an account in OpenProject with administrator rights. This account will serve as a service account. The access token will be used for making requests to the OpenProject API to obtain more detailed information not contained in the webhook body.
 
