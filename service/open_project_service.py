@@ -1,3 +1,5 @@
+import asyncio
+
 from config import config_
 import aiohttp
 import base64
@@ -38,16 +40,16 @@ def watchers(func):
                 name_lamb = lambda x: self_instance._get_embedded_value(x, ['_links', 'self', 'title'])
                 href_lamb = lambda x: self_instance._get_embedded_value(x, ['_links', 'self', 'href'])
                 watching_users = [{"name": name_lamb(i), "href": href_lamb(i)} for i in _array]
-
                 # Add watcher users to the resulting dictionary
-                [task_info['notify_users'].append(item) for item in watching_users
-                 if item not in task_info['notify_users']
-                 ]
+                for watching_user in watching_users:
+                    if watching_user != task_info['author']:
+                        task_info['notify_users'].append(watching_user)
 
         except Exception as _ex:
             raise ValueError(f"Error processing data in the <watchers> decorator. Exception: {_ex}\n "
                              f"Input data: {body_json}")
         finally:
+            print(task_info)
             return task_info
 
     return wrapper
@@ -177,19 +179,14 @@ class OpenProjectService:
         The method forms a dictionary used to create the message for sending via the Telegram bot,
         and also generates a list of users who will receive the distribution
         """
-
         action = body_json.get('action')
-        work_package = body_json.get('work_package')  # block with necessary information from the webhook
-        if work_package:
-            task_info = self.get_task_info(work_package)
-        else:
-            raise ValueError("The webhook payload does not contain the 'work_package' key."
-                             f"Webhook payload: {str(body_json)}")
         # based on the update type, the resulting dictionary is formed. there are only three types: creating a new task,
         # updating an existing task, and adding a comment to an existing task
 
         # ****
         if action == "work_package:created":
+            task_info = self.get_task_info(body_json.get('work_package')) # block with necessary information from the webhook
+
             # New task was created
             task_info['notify_users'] = [
                 user for user in [task_info['author'], task_info['responsible'], task_info['performer']]
@@ -200,6 +197,8 @@ class OpenProjectService:
             return task_info
         # ****
         elif action == "work_package:updated":
+            work_package = body_json.get('work_package')
+            task_info = self.get_task_info(work_package) # block with necessary information from the webhook
             # Existing task was updated
             activities_url = work_package['_links']['activities']['href']
             activities_json = await self.get_request_to_api(activities_url)
@@ -219,6 +218,7 @@ class OpenProjectService:
                 user for user in [task_info['author'], task_info['responsible'], task_info['performer']]
                 if user and user.get('href') != activity_user_href
             ]
+            print(task_info)
             return task_info
         # ****
         elif action == "work_package_comment:comment":
@@ -247,7 +247,6 @@ class OpenProjectService:
                 user for user in [task_info['author'], task_info['responsible'], task_info['performer']]
                 if user and user.get('href') != activity_user_href
             ]
-
             return task_info
 
         return None

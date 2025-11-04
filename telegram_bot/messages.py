@@ -26,7 +26,7 @@ def generate_notif_msg(preparing_data):
     text += f"<b>Исполнитель:</b> {preparing_data['performer']['name'] if preparing_data['performer']['name'] else ''}\n"
     # if preparing_data['responsible']:
     #     text += f"<b>Ответственный:</b> {preparing_data['responsible']['name']}\n"
-    #
+
     text += f"<b>Описание задачи:</b>\n{preparing_data['description']}"
 
     if preparing_data.get('comment', None):
