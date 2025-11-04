@@ -1,6 +1,6 @@
 # OpenProject Telegram Bot
 
-A Telegram bot for integrating with OpenProject that provides instant notifications in chat.
+A Telegram bot for integrating with [OpenProject](https://www.openproject.org/) that provides instant notifications in chat.
 
 ## Core Functionality
 
