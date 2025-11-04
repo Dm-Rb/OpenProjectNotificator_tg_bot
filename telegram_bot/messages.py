@@ -20,12 +20,12 @@ def generate_notif_msg(preparing_data):
     text += f"<b>Проект:</b> {preparing_data['project'] if preparing_data['project'] else '-'}\n"
     text += f"<b>Задача:</b> <a href='{preparing_data['link']}'>{preparing_data['subject'] if preparing_data['subject'] else '-'}</a>\n"
     # text += f"Тип: {preparing_data['type'] if preparing_data['type'] else '-'}\n"
-    text += f"<b>Статус:</b> {status_colors.get(preparing_data.get('status', None), '')} {preparing_data['status'] if preparing_data['status'] else '-'}\n"
-    text += f"<b>Приоритет:</b> {priority_colors.get(preparing_data.get('priority', None), '')} {preparing_data['priority'] if preparing_data['priority'] else '-'}\n"
-    text += f"<b>Автор:</b> {preparing_data['author']['name']}\n"
+    # text += f"<b>Статус:</b> {status_colors.get(preparing_data.get('status', None), '')} {preparing_data['status'] if preparing_data['status'] else '-'}\n"
+    # text += f"<b>Приоритет:</b> {priority_colors.get(preparing_data.get('priority', None), '')} {preparing_data['priority'] if preparing_data['priority'] else '-'}\n"
+    # text += f"<b>Автор:</b> {preparing_data['author']['name']}\n"
     text += f"<b>Исполнитель:</b> {preparing_data['performer']['name'] if preparing_data['performer']['name'] else ''}\n"
-    if preparing_data['responsible']:
-        text += f"<b>Ответственный:</b> {preparing_data['responsible']['name']}\n"
+    # if preparing_data['responsible']:
+    #     text += f"<b>Ответственный:</b> {preparing_data['responsible']['name']}\n"
 
     text += f"<b>Описание задачи:</b>\n{preparing_data['description']}"
 
