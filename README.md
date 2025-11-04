@@ -2,6 +2,9 @@
 
 A Telegram bot for integrating with [OpenProject](https://www.openproject.org/) that provides instant notifications in chat.
 
+<img width="511" height="480" alt="изображение" src="https://github.com/user-attachments/assets/f7074dff-2ef3-4a19-a645-656744f57edd" />
+
+
 ## Core Functionality
 
 The bot receives webhooks (notifications) from OpenProject about any updates (new tasks, status changes, comments, etc.) and automatically sends personalized notifications to Telegram.
