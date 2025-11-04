@@ -49,7 +49,6 @@ def watchers(func):
             raise ValueError(f"Error processing data in the <watchers> decorator. Exception: {_ex}\n "
                              f"Input data: {body_json}")
         finally:
-            print(task_info)
             return task_info
 
     return wrapper
@@ -218,7 +217,6 @@ class OpenProjectService:
                 user for user in [task_info['author'], task_info['responsible'], task_info['performer']]
                 if user and user.get('href') != activity_user_href
             ]
-            print(task_info)
             return task_info
         # ****
         elif action == "work_package_comment:comment":
