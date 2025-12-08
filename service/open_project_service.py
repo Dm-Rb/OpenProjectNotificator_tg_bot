@@ -9,6 +9,10 @@ import re
 
 
 def assignees(func):
+    """
+    Decorator. Extends the OpenProjectService.process_webhook_json method.
+    Adds users with the "Assignee" status to the list of recipients for notifications.
+    """
     async def wrapper(self_instance, body_json):
         task_info = await func(self_instance, body_json)
         try:
