@@ -1,5 +1,3 @@
-import asyncio
-
 from config import config_
 import aiohttp
 import base64
@@ -8,6 +6,31 @@ import re
 
 
 #  This version of the code works with a custom field in a webhook. key - "customField12". It is performer (Исполнитель)
+
+
+def assignees(func):
+    async def wrapper(self_instance, body_json):
+        task_info = await func(self_instance, body_json)
+        try:
+            if body_json.get('work_package', None):
+                assignee_user = body_json['work_package']['_links']['assignee']
+            elif body_json.get('activity', None):
+                assignee_user = body_json['activity']['_embedded']['workPackage']['_links']['assignee']
+            else:
+                assignee_user = None
+            if assignee_user:
+                assignee_user['name'] = assignee_user['title']
+                del assignee_user['title']
+                if assignee_user != task_info['author']:
+                    task_info['notify_users'].append(assignee_user)
+
+        except Exception as _ex:
+            raise ValueError(f"Error processing data in the <watchers> decorator. Exception: {_ex}\n "
+                             f"Input data: {body_json}")
+        finally:
+            return task_info
+
+    return wrapper
 
 
 def watchers(func):
@@ -172,6 +195,7 @@ class OpenProjectService:
         }
         return info
 
+    @assignees
     @watchers
     async def processing_webhook_json(self, body_json: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
