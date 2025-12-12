@@ -1,9 +1,11 @@
 # Clone the repository
 git clone <repository-url>
+
 cd <project-directory>
 
 # Create virtual environment
 python3 -m venv venv
+
 source venv/bin/activate
 
 # Install dependencies
