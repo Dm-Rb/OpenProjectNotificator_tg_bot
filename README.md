@@ -1,7 +1,7 @@
 # Clone the repository
-git clone <repository-url>
+git clone {repositoryurl}
 
-cd <project-directory>
+cd {projectdirectory}
 
 # Create virtual environment
 python3 -m venv venv
