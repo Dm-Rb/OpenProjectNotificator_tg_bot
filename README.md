@@ -1,7 +1,7 @@
 # Clone the repository
-git clone {repositoryurl}
+git clone https://gitlab.remzona.dev/tools/python/notifyopenprj_telergrambot
 
-cd {projectdirectory}
+cd {project_directory}
 
 # Create virtual environment
 python3 -m venv venv
