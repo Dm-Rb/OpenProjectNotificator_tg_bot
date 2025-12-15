@@ -3,32 +3,39 @@ import aiohttp
 import base64
 from typing import Optional, Dict, Any, List
 import re
+from logging_config import logger
 
 
 def customField55(func):
     async def wrapper(self_instance, body_json):
-        task_info = await func(self_instance, body_json)
-        if task_info.get('project'):
-            prj_name = 'Оплата счетов'
-            if prj_name.lower() in task_info['project'].lower():
-                if task_info.get('status'):
-                    stat_name = 'В оплату'
-                    if stat_name.lower() in task_info['status'].lower():
-                        work_package = body_json.get('work_package')
-                        if work_package:
-                            if work_package.get('customField55'):
-                                task_info['notify_users'].append({"name": work_package['customField55'], "href": ""})
-                                return task_info
-                        activity = body_json.get('activity')
-                        if activity:
-                            _embedded = activity.get('_embedded')
-                            if _embedded:
-                                work_package = _embedded.get('workPackage')
-                                if work_package:
-                                    if work_package.get('customField55'):
-                                        task_info['notify_users'].append(
-                                            {"name": work_package['customField55'], "href": ""})
-                                        return task_info
+        try:
+
+            task_info = await func(self_instance, body_json)
+            if task_info.get('project'):
+                prj_name = 'Оплата счетов'
+                if prj_name.lower() in task_info['project'].lower():
+                    if task_info.get('status'):
+                        stat_name = 'В оплату'
+                        if stat_name.lower() in task_info['status'].lower():
+                            work_package = body_json.get('work_package')
+                            if work_package:
+                                if work_package.get('customField55'):
+                                    task_info['notify_users'].append({"name": work_package['customField55'], "href": ""})
+                                    return task_info
+                            activity = body_json.get('activity')
+                            if activity:
+                                _embedded = activity.get('_embedded')
+                                if _embedded:
+                                    work_package = _embedded.get('workPackage')
+                                    if work_package:
+                                        if work_package.get('customField55'):
+                                            task_info['notify_users'].append(
+                                                {"name": work_package['customField55'], "href": ""})
+                                            return task_info
+        except Exception as e:
+            logger.error("Error in the <customField55> decorator': %s; body_json: %s", str(e), body_json)
+
+    return wrapper
 
 
 def watchers(func):
@@ -67,8 +74,8 @@ def watchers(func):
                         task_info['notify_users'].append(watching_user)
 
         except Exception as _ex:
-            raise ValueError(f"Error processing data in the <watchers> decorator. Exception: {_ex}\n "
-                             f"Input data: {body_json}")
+
+            logger.error("Error in the <watchers> decorator: %s; body_json: %s", str(_ex), body_json)
         finally:
             return task_info
 
