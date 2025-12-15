@@ -34,6 +34,8 @@ def customField55(func):
                                             return task_info
         except Exception as e:
             logger.error("Error in the <customField55> decorator': %s; body_json: %s", str(e), body_json)
+        finally:
+            return task_info
 
     return wrapper
 
