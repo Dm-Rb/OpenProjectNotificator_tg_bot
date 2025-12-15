@@ -8,9 +8,9 @@ from logging_config import logger
 
 def customField55(func):
     async def wrapper(self_instance, body_json):
-        try:
 
-            task_info = await func(self_instance, body_json)
+        task_info = await func(self_instance, body_json)
+        try:
             if task_info.get('project'):
                 prj_name = 'Оплата счетов'
                 if prj_name.lower() in task_info['project'].lower():
@@ -237,6 +237,7 @@ class OpenProjectService:
                                  "The API returned an empty response. Please check the user's access token.")
             try:
                 last_element = activities_json['_embedded']['elements'][-1]
+
                 last_activity = last_element['details'][-1]['html']
                 activity_user_href = last_element['_links']['user']['href']
             except (KeyError, IndexError):
