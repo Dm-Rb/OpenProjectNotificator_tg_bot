@@ -21,6 +21,7 @@ def customField55(func):
                             if work_package:
                                 if work_package.get('customField55'):
                                     task_info['notify_users'].append({"name": work_package['customField55'], "href": ""})
+                                    task_info['invoice '] = str(work_package['customField51'])
                                     return task_info
                             activity = body_json.get('activity')
                             if activity:
@@ -31,6 +32,7 @@ def customField55(func):
                                         if work_package.get('customField55'):
                                             task_info['notify_users'].append(
                                                 {"name": work_package['customField55'], "href": ""})
+                                            task_info['invoice '] = str(work_package['customField51'])
                                             return task_info
         except Exception as e:
             logger.error("Error in the <customField55> decorator': %s; body_json: %s", str(e), body_json)
