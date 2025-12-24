@@ -32,7 +32,7 @@ def generate_notif_msg(preparing_data):
     if "Тикеты" in preparing_data.get('project', ''):
         text += f"<b>Описание задачи:</b>\n{preparing_data['description']}"
     if preparing_data.get('invoice', None):
-        text += f"<b>Сумма НДС:</b> {preparing_data['invoice']}\n"
+        text += f"<b>Итого к оплате:</b> {preparing_data['invoice']}\n"
     if preparing_data.get('comment', None):
         text += f"\n<b>Комментарий:</b>\n{preparing_data['comment']}"
 
