@@ -1,7 +1,8 @@
 from config import config_
 import aiohttp
 import base64
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Callable
+from functools import wraps
 import re
 from logging_config import logger
 
@@ -84,6 +85,40 @@ def watchers(func):
             logger.error("Error in the <watchers> decorator: %s; body_json: %s", str(_ex), body_json)
         finally:
             return task_info
+
+    return wrapper
+
+
+def remove_duplicate_users(func: Callable) -> Callable:
+    """
+    Decorator for removing duplicate users in task_info['notify_users']
+    """
+
+    @wraps(func)
+    async def wrapper(*args, **kwargs) -> Optional[Dict[str, Any]]:
+        result = await func(*args, **kwargs)
+
+        # if the result is not None and contains the key 'notify_users'
+        if result and 'notify_users' in result and isinstance(result['notify_users'], list):
+            # Удаляем дубликаты
+            unique_users = []
+            seen = set()
+
+            for user in result['notify_users']:
+                # create a key for comparison (use href as a unique identifier)
+                if isinstance(user, dict) and 'href' in user:
+                    user_key = user['href']  # href unique for each user
+                else:
+                    # if href not exist, use the full dictionary representation
+                    user_key = tuple(sorted(user.items())) if isinstance(user, dict) else str(user)
+
+                if user_key not in seen:
+                    seen.add(user_key)
+                    unique_users.append(user)
+
+            result['notify_users'] = unique_users
+
+        return result
 
     return wrapper
 
@@ -208,6 +243,7 @@ class OpenProjectService:
 
     @customField55
     @watchers
+    @remove_duplicate_users
     async def processing_webhook_json(self, body_json: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         The method forms a dictionary used to create the message for sending via the Telegram bot,

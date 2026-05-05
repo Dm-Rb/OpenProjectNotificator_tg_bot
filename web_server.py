@@ -19,7 +19,6 @@ async def openproject_webhook(request: Request):
             # Passing the raw webhook content to the handler
             prepared_data = await open_prj_service.processing_webhook_json(body_json)
             if isinstance(prepared_data, dict):
-                logger.error("prepared_data: %s", prepared_data)
                 # Sending the prepared data to the Telegram bot for distribution to users
                 await send_notifications(bot_obj, prepared_data)
         except Exception as e:
